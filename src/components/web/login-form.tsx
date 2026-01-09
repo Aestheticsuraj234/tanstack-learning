@@ -44,7 +44,7 @@ const navigate = useNavigate()
             onSuccess: () => {
               toast.success('Logged in successfully')
               navigate({
-                to: '/',
+                to: '/dashboard',
               })
             },
             onError: ({ error }) => {
