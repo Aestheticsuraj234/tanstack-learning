@@ -1,8 +1,26 @@
-import React from 'react'
+import { Link } from '@tanstack/react-router'
+import { Button, buttonVariants } from '../ui/button'
+import { ThemeToggle } from './theme-toggle'
+import { authClient } from '@/lib/auth-client'
+import { toast } from 'sonner'
 
 const Navbar = () => {
+  const { data: session, isPending } = authClient.useSession()
+
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          toast.success('Signed out successfully')
+        },
+        onError: ({ error }) => {
+          toast.error(error.message)
+        },
+      },
+    })
+  }
   return (
-    <div className="sticky top-0 z-50 border-b bg-amber-50 backdrop-blur-2xl">
+    <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 ">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <img
@@ -13,12 +31,33 @@ const Navbar = () => {
           <h1 className="text-lg font-semibold">TanStack Start</h1>
         </div>
 
-
-        <div className='flex items-center gap-3'>
-            <button className='text-white bg-red-500 px-3'></button>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          {isPending ? null : session ? (
+            <>
+              <Button onClick={handleSignOut} variant="secondary">
+                Logout
+              </Button>
+              <Link to="/" className={buttonVariants()}>
+                Dashboard
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className={buttonVariants({ variant: 'secondary' })}
+              >
+                Login
+              </Link>
+              <Link to="/sign-up" className={buttonVariants()}>
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
-    </div>
+    </nav>
   )
 }
 
